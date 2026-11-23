@@ -9,7 +9,7 @@ from homeassistant.const import EVENT_HOMEASSISTANT_STOP
 from homeassistant.core import Event, HomeAssistant, callback
 from homeassistant.exceptions import ConfigEntryNotReady
 
-from .discovery import scan_local_addresses
+from .discovery import scan_neighbours
 from .proxy import ModbusBridge
 
 DOMAIN = "huawei_dynamic_ip_translator"
@@ -20,6 +20,17 @@ CONF_UNIT_ID = "unit_id"
 CONF_SERIAL = "serial"
 
 type BridgeEntry = ConfigEntry[ModbusBridge]
+
+
+async def async_scan_neighbours(hass: HomeAssistant) -> dict[str, str]:
+    """Find neighbours on the enabled Home Assistant network interfaces."""
+    interfaces = [
+        (adapter["name"], IPv4Interface(f"{ip['address']}/{ip['network_prefix']}"))
+        for adapter in await network.async_get_adapters(hass)
+        if adapter["enabled"]
+        for ip in adapter["ipv4"]
+    ]
+    return await scan_neighbours(interfaces)
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: BridgeEntry) -> bool:
@@ -39,13 +50,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: BridgeEntry) -> bool:
         ]
 
     async def scan_addresses() -> list[str]:
-        interfaces = [
-            (adapter["name"], IPv4Interface(f"{ip['address']}/{ip['network_prefix']}"))
-            for adapter in await network.async_get_adapters(hass)
-            if adapter["enabled"]
-            for ip in adapter["ipv4"]
-        ]
-        return await scan_local_addresses(mac, interfaces)
+        return [ip for ip, found_mac in (await async_scan_neighbours(hass)).items() if found_mac == mac]
 
     bridge = ModbusBridge(
         device_port=entry.data[CONF_DEVICE_PORT],

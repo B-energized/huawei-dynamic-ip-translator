@@ -3,6 +3,22 @@
     "step": {
       "user": {
         "title": "Set up Huawei Dynamic IP Translator",
+        "description": "Let Home Assistant look for the Huawei device on your local network or enter its MAC address yourself.",
+        "menu_options": {
+          "scan": "Search automatically",
+          "manual": "Set up manually"
+        }
+      },
+      "select": {
+        "title": "Choose your Huawei device",
+        "description": "Choose the device Huawei Solar connects to. Each device shows its IP and MAC address.",
+        "data": {
+          "device": "Huawei device",
+          "local_port": "Local port for Huawei Solar"
+        }
+      },
+      "manual": {
+        "title": "Set up Huawei Dynamic IP Translator",
         "description": "After setup, reconfigure Huawei Solar to use 127.0.0.1 and the local port below. Keep the existing Modbus unit IDs.",
         "data": {
           "mac": "Huawei network MAC address",
@@ -14,14 +30,45 @@
           "mac": "Enter the MAC address of the network device Huawei Solar connects to, such as the Smart Dongle, EMMA, or inverter.",
           "unit_id": "Use the first unit ID from the existing Huawei Solar installation. This is used to read and verify its serial number."
         }
+      },
+      "check_failed": {
+        "title": "Modbus not verified",
+        "description": "No recognisable Huawei Modbus response was received from {host}. Choose another device or retry with the port and unit ID from Huawei Solar.",
+        "menu_options": {
+          "select": "Choose another device",
+          "connection": "Check with different Modbus settings",
+          "manual": "Set up manually"
+        }
+      },
+      "connection": {
+        "title": "Check Modbus again",
+        "description": "Enter the Modbus port and unit ID for {host}.",
+        "data": {
+          "device_port": "Huawei Modbus TCP port",
+          "unit_id": "Primary Modbus unit ID"
+        }
+      },
+      "confirm": {
+        "title": "Huawei found and verified",
+        "description": "{model} at {host}:{port} responded over Modbus. Serial number: {serial}. Save, then configure Huawei Solar to use 127.0.0.1, port {local_port}."
+      },
+      "confirm_existing": {
+        "title": "Existing Huawei Solar connection found",
+        "description": "{model} at {host}:{port} matches your Huawei Solar configuration. Save, then configure Huawei Solar to use 127.0.0.1, port {local_port}. The translator verifies the serial number on that first connection."
       }
     },
     "error": {
       "invalid_mac": "Enter a valid MAC address, such as 94:25:33:12:34:56.",
-      "port_in_use": "Another Huawei Dynamic IP Translator already uses this local port."
+      "port_in_use": "Another Huawei Dynamic IP Translator already uses this local port.",
+      "no_devices": "No Huawei device was found. You can enter its MAC address below."
     },
     "abort": {
-      "already_configured": "This MAC address is already configured."
+      "already_configured": "This MAC address is already configured.",
+      "port_in_use": "Another Huawei Dynamic IP Translator already uses this local port."
+    },
+    "progress": {
+      "scanning": "Searching your local network for Huawei devices. This may take a moment.",
+      "checking": "Checking the Modbus connection to {host}."
     }
   }
 }

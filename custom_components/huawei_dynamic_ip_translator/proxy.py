@@ -15,6 +15,7 @@ SCAN_TIMEOUT = 15
 CONNECT_TIMEOUT = 3
 IDENTITY_TIMEOUT = 5
 RESPONSE_IDLE_TIMEOUT = 120
+MODEL_PREFIXES = ("SUN2000", "SUN5000", "EMMA", "SDONGLE", "SMARTLOGGER")
 
 
 def normalize_mac(value: str) -> str:
@@ -39,27 +40,69 @@ async def close_stream(writer: asyncio.StreamWriter) -> None:
         writer.transport.abort()
 
 
+async def read_text_registers(
+    reader: asyncio.StreamReader,
+    writer: asyncio.StreamWriter,
+    unit_id: int,
+    register: int,
+    count: int,
+    transaction_id: int,
+) -> str:
+    """Read a text field using Modbus function 03, including framed exceptions."""
+    writer.write(struct.pack(">HHHBBHH", transaction_id, 0, 6, unit_id, 3, register, count))
+    await writer.drain()
+    transaction, protocol, length = struct.unpack(">HHH", await reader.readexactly(6))
+    if not 2 <= length <= 254:
+        raise ConnectionError("Invalid Modbus response length")
+    response = await reader.readexactly(length)
+    if (transaction, protocol, length) != (transaction_id, 0, 3 + count * 2):
+        raise ValueError("Unexpected Modbus response header")
+    if response[:3] != bytes((unit_id, 3, count * 2)):
+        raise ValueError("Unexpected Modbus response")
+    value = response[3:].strip(b"\x00 ").decode("ascii")
+    if not value or not value.isprintable() or not any(c.isalnum() for c in value):
+        raise ValueError("Missing Modbus text value")
+    return value
+
+
 async def read_serial(
     reader: asyncio.StreamReader, writer: asyncio.StreamWriter, unit_id: int
 ) -> str:
-    """Read the ten Huawei serial-number registers using function 03."""
-    transaction_id = 0xA57E
-    request = struct.pack(">HHHBBHH", transaction_id, 0, 6, unit_id, 3, 30015, 10)
+    """Read the Huawei serial number before relaying."""
     async with asyncio.timeout(IDENTITY_TIMEOUT):
         # Some Huawei endpoints need time to accept requests after TCP connects.
         await asyncio.sleep(1)
-        writer.write(request)
-        await writer.drain()
-        transaction, protocol, length = struct.unpack(">HHH", await reader.readexactly(6))
-        if (transaction, protocol, length) != (transaction_id, 0, 23):
-            raise ValueError("Invalid Huawei serial response header")
-        response = await reader.readexactly(length)
-    if response[:3] != bytes((unit_id, 3, 20)):
-        raise ValueError("Invalid Huawei serial response")
-    serial = response[3:].strip(b"\x00 ").decode("ascii")
-    if not serial or not serial.isprintable() or not any(c.isalnum() for c in serial):
-        raise ValueError("Missing Huawei serial number")
-    return serial
+        return await read_text_registers(reader, writer, unit_id, 30015, 10, 0xA57E)
+
+
+async def probe_huawei(
+    host: str, port: int, unit_ids: Iterable[int]
+) -> tuple[str, str, int] | None:
+    """Identify a Huawei endpoint during the user-initiated setup scan."""
+    try:
+        async with asyncio.timeout(0.7):
+            reader, writer = await asyncio.open_connection(host, port)
+    except (OSError, TimeoutError):
+        return None
+    try:
+        await asyncio.sleep(1)
+        for unit_id in unit_ids:
+            try:
+                async with asyncio.timeout(1.3):
+                    model = await read_text_registers(reader, writer, unit_id, 30000, 15, 0x100 + unit_id)
+                if not model.upper().startswith(MODEL_PREFIXES):
+                    continue
+                await asyncio.sleep(0.08)
+                async with asyncio.timeout(1.3):
+                    serial = await read_text_registers(reader, writer, unit_id, 30015, 10, 0x200 + unit_id)
+                return model, serial, unit_id
+            except (ValueError, TimeoutError):
+                continue
+    except (OSError, asyncio.IncompleteReadError):
+        pass
+    finally:
+        await close_stream(writer)
+    return None
 
 
 async def copy_stream(

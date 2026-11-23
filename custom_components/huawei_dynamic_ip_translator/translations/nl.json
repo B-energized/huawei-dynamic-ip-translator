@@ -3,6 +3,22 @@
     "step": {
       "user": {
         "title": "Huawei Dynamic IP Translator instellen",
+        "description": "Laat Home Assistant het Huawei-toestel op het lokale netwerk zoeken of vul het MAC-adres zelf in.",
+        "menu_options": {
+          "scan": "Automatisch zoeken",
+          "manual": "Handmatig instellen"
+        }
+      },
+      "select": {
+        "title": "Kies je Huawei-toestel",
+        "description": "Kies het toestel waarmee Huawei Solar verbindt. Het IP-adres en MAC-adres staan bij elk toestel.",
+        "data": {
+          "device": "Huawei-toestel",
+          "local_port": "Lokale poort voor Huawei Solar"
+        }
+      },
+      "manual": {
+        "title": "Huawei Dynamic IP Translator instellen",
         "description": "Stel Huawei Solar hierna opnieuw in op 127.0.0.1 en de lokale poort hieronder. Behoud de bestaande Modbus-unit-ID's.",
         "data": {
           "mac": "MAC-adres van Huawei",
@@ -14,14 +30,45 @@
           "mac": "Vul het MAC-adres in van het toestel waarmee Huawei Solar verbindt, zoals de Smart Dongle, EMMA of omvormer.",
           "unit_id": "Gebruik de eerste unit-ID uit de bestaande Huawei Solar-instellingen. De bridge gebruikt die om het serienummer te lezen en te controleren."
         }
+      },
+      "check_failed": {
+        "title": "Modbus niet bevestigd",
+        "description": "Er kwam geen herkenbaar Huawei Modbus-antwoord van {host}. Kies een ander toestel of probeer met de poort en unit-ID uit Huawei Solar.",
+        "menu_options": {
+          "select": "Kies een ander toestel",
+          "connection": "Controleer met andere Modbus-instellingen",
+          "manual": "Handmatig instellen"
+        }
+      },
+      "connection": {
+        "title": "Modbus opnieuw controleren",
+        "description": "Vul de Modbus-poort en unit-ID in voor {host}.",
+        "data": {
+          "device_port": "Modbus TCP-poort op Huawei",
+          "unit_id": "Primaire Modbus-unit-ID"
+        }
+      },
+      "confirm": {
+        "title": "Huawei gevonden en bevestigd",
+        "description": "{model} op {host}:{port} antwoordde via Modbus. Serienummer: {serial}. Sla op en stel Huawei Solar in op 127.0.0.1, poort {local_port}."
+      },
+      "confirm_existing": {
+        "title": "Bestaande Huawei Solar-verbinding gevonden",
+        "description": "{model} op {host}:{port} komt overeen met je Huawei Solar-configuratie. Sla op en stel Huawei Solar in op 127.0.0.1, poort {local_port}. De translator controleert het serienummer bij die eerste verbinding."
       }
     },
     "error": {
       "invalid_mac": "Vul een geldig MAC-adres in, bijvoorbeeld 94:25:33:12:34:56.",
-      "port_in_use": "Een andere Huawei Dynamic IP Translator gebruikt deze lokale poort al."
+      "port_in_use": "Een andere Huawei Dynamic IP Translator gebruikt deze lokale poort al.",
+      "no_devices": "Geen Huawei-toestel gevonden. Je kunt het MAC-adres hieronder invullen."
     },
     "abort": {
-      "already_configured": "Dit MAC-adres is al ingesteld."
+      "already_configured": "Dit MAC-adres is al ingesteld.",
+      "port_in_use": "Een andere Huawei Dynamic IP Translator gebruikt deze lokale poort al."
+    },
+    "progress": {
+      "scanning": "Huawei-toestellen zoeken op je lokale netwerk. Dit kan even duren.",
+      "checking": "Modbus-verbinding met {host} controleren."
     }
   }
 }

@@ -1,4 +1,4 @@
-"""Discover a configured MAC on directly connected Linux IPv4 networks."""
+"""Find IPv4 neighbours on directly connected Linux networks."""
 
 import asyncio
 from collections.abc import Iterable
@@ -10,11 +10,22 @@ import socket
 
 ARP_TABLE = Path("/proc/net/arp")
 MAX_SUBNET_ADDRESSES = 1024
+HUAWEI_PREFIX_FILE = Path(__file__).with_name("huawei_prefixes.txt")
 
 
-def matching_addresses(table: str, mac: str, name: str, interface: IPv4Interface) -> list[str]:
-    """Filter complete ARP entries by interface, subnet and exact MAC."""
-    matches = []
+def load_huawei_prefixes() -> frozenset[str]:
+    """Load Huawei assignments from the bundled IEEE MA-L, MA-M and MA-S subset."""
+    return frozenset(HUAWEI_PREFIX_FILE.read_text(encoding="ascii").splitlines())
+
+
+def is_huawei_mac(mac: str, prefixes: frozenset[str]) -> bool:
+    """Check the registered prefixes of a normalized MAC address."""
+    return any(mac[:length] in prefixes for length in (6, 7, 9))
+
+
+def parse_neighbours(table: str, name: str, interface: IPv4Interface) -> dict[str, str]:
+    """Return complete ARP entries on the selected interface and subnet."""
+    neighbours = {}
     for line in table.splitlines()[1:]:
         fields = line.split()
         if len(fields) != 6:
@@ -22,20 +33,17 @@ def matching_addresses(table: str, mac: str, name: str, interface: IPv4Interface
         ip, _, flags, hardware, _, device = fields
         if (
             device == name
-            and hardware.replace(":", "").lower() == mac
             and int(flags, 16) & 2
             and IPv4Address(ip) in interface.network
         ):
-            matches.append(ip)
-    return matches
+            neighbours[ip] = hardware.replace(":", "").lower()
+    return neighbours
 
 
-async def scan_local_addresses(
-    mac: str, interfaces: Iterable[tuple[str, IPv4Interface]]
-) -> list[str]:
+async def scan_neighbours(interfaces: Iterable[tuple[str, IPv4Interface]]) -> dict[str, str]:
     """Trigger ordinary neighbour resolution without requiring raw sockets or DNS."""
     loop = asyncio.get_running_loop()
-    matches: list[str] = []
+    neighbours: dict[str, str] = {}
     for name, interface in interfaces:
         if interface.ip.is_loopback or interface.network.num_addresses > MAX_SUBNET_ADDRESSES:
             continue
@@ -51,5 +59,5 @@ async def scan_local_addresses(
                 await asyncio.sleep(0.04)
         await asyncio.sleep(0.75)
         table = await asyncio.to_thread(ARP_TABLE.read_text, encoding="ascii")
-        matches.extend(matching_addresses(table, mac, name, interface))
-    return matches
+        neighbours.update(parse_neighbours(table, name, interface))
+    return neighbours

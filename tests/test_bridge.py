@@ -121,7 +121,17 @@ class BridgeTest(unittest.IsolatedAsyncioTestCase):
 
 
 class DiscoveryTest(unittest.TestCase):
-    def test_only_complete_matching_mac_on_selected_subnet_is_returned(self):
+    def test_huawei_vendor_prefixes_include_both_assignments(self):
+        prefixes = discovery.load_huawei_prefixes()
+        self.assertTrue(discovery.is_huawei_mac("108ffe010203", prefixes))
+        self.assertTrue(discovery.is_huawei_mac("a8ffba010203", prefixes))
+        self.assertFalse(discovery.is_huawei_mac("020000010203", prefixes))
+
+    def test_longer_vendor_assignments_are_matched_at_their_exact_length(self):
+        self.assertTrue(discovery.is_huawei_mac("012345678123", frozenset({"012345678"})))
+        self.assertFalse(discovery.is_huawei_mac("012345679123", frozenset({"012345678"})))
+
+    def test_only_complete_neighbours_on_selected_subnet_are_returned(self):
         table = """IP address HW type Flags HW address Mask Device
 192.168.10.40 0x1 0x2 94:25:33:12:34:56 * eth0
 192.168.10.41 0x1 0x0 94:25:33:12:34:56 * eth0
@@ -130,6 +140,40 @@ class DiscoveryTest(unittest.TestCase):
 192.168.11.40 0x1 0x2 94:25:33:12:34:56 * eth0
 """
         self.assertEqual(
-            discovery.matching_addresses(table, "942533123456", "eth0", IPv4Interface("192.168.10.1/24")),
-            ["192.168.10.40"],
+            discovery.parse_neighbours(table, "eth0", IPv4Interface("192.168.10.1/24")),
+            {"192.168.10.40": "942533123456", "192.168.10.42": "942533123457"},
         )
+
+
+class DeviceProbeTest(unittest.IsolatedAsyncioTestCase):
+    async def check_model(self, model):
+        async def serve(reader, writer):
+            try:
+                while True:
+                    request = await reader.readexactly(12)
+                    tid, protocol, length, unit, function, register, count = struct.unpack(
+                        ">HHHBBHH", request
+                    )
+                    self.assertEqual((protocol, length, function), (0, 6, 3))
+                    if unit != 0:
+                        writer.write(struct.pack(">HHHBBB", tid, 0, 3, unit, 0x83, 2))
+                    else:
+                        value = model if register == 30000 else b"HUAWEI-123"
+                        size = 2 * count
+                        writer.write(struct.pack(">HHHBBB", tid, 0, 3 + size, unit, 3, size))
+                        writer.write(value.ljust(size, b"\x00"))
+                    await writer.drain()
+            except asyncio.IncompleteReadError:
+                pass
+            finally:
+                await proxy.close_stream(writer)
+
+        async with await asyncio.start_server(serve, "127.0.0.1", 0) as server:
+            port = server.sockets[0].getsockname()[1]
+            return await proxy.probe_huawei("127.0.0.1", port, (1, 0))
+
+    async def test_discovers_huawei_and_finds_responding_unit(self):
+        self.assertEqual(await self.check_model(b"SUN2000-5KTL"), ("SUN2000-5KTL", "HUAWEI-123", 0))
+
+    async def test_ignores_non_huawei_modbus_device(self):
+        self.assertIsNone(await self.check_model(b"OTHER-MODEL"))

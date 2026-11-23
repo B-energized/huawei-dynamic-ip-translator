@@ -21,14 +21,17 @@ Heb je versie 0.1.0 of 0.1.1 al geïnstalleerd? Noteer eerst je instellingen. Ve
 ## Eenmalig instellen
 
 1. Ga naar **Instellingen → Apparaten en diensten → Integratie toevoegen → Huawei Dynamic IP Translator**.
-2. Vul het **MAC-adres van het netwerktoestel waarmee Huawei Solar verbindt** in. Neem de bestaande Huawei Modbus TCP-poort en de eerste Modbus-unit-ID over uit Huawei Solar. De voorbeeldwaarden zijn `502` en `1`. Laat de lokale poort op `15020` staan, of kies per extra bridge een vrije poort.
-3. Open bij je bestaande Huawei Solar-integratie **⋮ → Opnieuw configureren**. Vul `127.0.0.1` in als host en `15020` als poort, of gebruik de gekozen lokale poort. Behoud de overige Huawei Solar-instellingen. Laat Huawei online tijdens deze eerste verbinding, zodat de bridge het serienummer kan opslaan.
+2. Kies **Automatisch zoeken**. Selecteer het toestel op basis van het model, het IP-adres en het MAC-adres. De lijst bevat bestaande Huawei Solar-verbindingen en toestellen waarvan het MAC-adres aan Huawei Technologies is toegewezen. Laat de lokale poort op `15020` staan of kies een vrije poort.
+3. Bij een nieuw gevonden toestel controleert de integratie de Modbus-verbinding en toont ze het model en serienummer voordat je opslaat. Als Huawei Solar al met het gekozen adres is ingesteld, neemt de integratie die gegevens over en controleert ze het serienummer bij de eerste verbinding via de translator. Via **Handmatig instellen** kun je de gegevens zelf invullen.
+4. Open bij je bestaande Huawei Solar-integratie **⋮ → Opnieuw configureren**. Vul `127.0.0.1` in als host en `15020` als poort, of gebruik de gekozen lokale poort. Behoud de overige Huawei Solar-instellingen. Laat Huawei online tijdens deze eerste verbinding, zodat de bridge het serienummer kan opslaan.
 
 ## Herstel na een adreswijziging
 
 Wanneer Huawei Solar na uitval opnieuw verbinding maakt, zoekt de bridge naar het ingestelde MAC-adres in de DHCP-gegevens die Home Assistant kent. Als het bekende adres niet meer werkt, volgt een ARP-scan. De bridge vergelijkt op elke nieuwe verbinding het serienummer. Pas na het antwoord van het juiste toestel begint ze de Modbus-verbinding door te sturen. Scans zijn beperkt tot één poging per minuut per bridge.
 
 De bridge luistert alleen op `127.0.0.1`. Huawei Solar en de bridge moeten in dezelfde Home Assistant-installatie draaien. De ARP-scan vereist Home Assistant OS of Linux met toegang tot het netwerk van de klant. Voor Home Assistant Container op Linux gebruik je hostnetwerkmodus. ARP werkt op hetzelfde lokale IPv4-netwerk, op ingeschakelde Home Assistant-netwerkinterfaces en op subnetten met maximaal 1024 adressen. Over een router of VLAN heen is herstel afhankelijk van de DHCP-informatie die Home Assistant kan zien. Het Huawei-toestel moet het serienummer via Modbus-register `30015` aanbieden op de ingestelde unit-ID.
+
+De fabrikantfilter gebruikt Huawei Technologies-prefixen uit de openbare [IEEE MA-L-, MA-M- en MA-S-registers](https://standards.ieee.org/products-programs/regauth/). De lijst is meegeleverd, zodat Home Assistant geen MAC-adressen naar een externe dienst hoeft te sturen.
 
 ## Controleren
 
