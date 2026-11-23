@@ -1,4 +1,4 @@
-"""Setup form for a Huawei Modbus Bridge."""
+"""Setup form for a Huawei Dynamic IP Translator."""
 
 import voluptuous as vol
 
@@ -32,7 +32,7 @@ class BridgeConfigFlow(ConfigFlow, domain=DOMAIN):
                     errors[CONF_LOCAL_PORT] = "port_in_use"
                 else:
                     return self.async_create_entry(
-                        title=f"Huawei Modbus Bridge ({user_input[CONF_LOCAL_PORT]})",
+                        title=f"Huawei Dynamic IP Translator ({user_input[CONF_LOCAL_PORT]})",
                         data={**user_input, CONF_MAC: mac},
                     )
 

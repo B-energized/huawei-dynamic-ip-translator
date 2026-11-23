@@ -132,7 +132,7 @@ class ModbusBridge:
         self._client_task = None
         self._client_writer = None
         if not task.cancelled() and (error := task.exception()) is not None:
-            LOGGER.error("Huawei Modbus Bridge session failed", exc_info=error)
+            LOGGER.error("Huawei Dynamic IP Translator session failed", exc_info=error)
 
     async def _try_addresses(
         self, addresses: Iterable[str], tried: set[str]

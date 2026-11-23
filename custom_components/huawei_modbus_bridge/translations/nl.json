@@ -2,7 +2,7 @@
   "config": {
     "step": {
       "user": {
-        "title": "Huawei Modbus Bridge instellen",
+        "title": "Huawei Dynamic IP Translator instellen",
         "description": "Stel Huawei Solar hierna opnieuw in op 127.0.0.1 en de lokale poort hieronder. Behoud de bestaande Modbus-unit-ID's.",
         "data": {
           "mac": "MAC-adres van Huawei",
@@ -18,7 +18,7 @@
     },
     "error": {
       "invalid_mac": "Vul een geldig MAC-adres in, bijvoorbeeld 94:25:33:12:34:56.",
-      "port_in_use": "Een andere Huawei Modbus Bridge gebruikt deze lokale poort al."
+      "port_in_use": "Een andere Huawei Dynamic IP Translator gebruikt deze lokale poort al."
     },
     "abort": {
       "already_configured": "Dit MAC-adres is al ingesteld."

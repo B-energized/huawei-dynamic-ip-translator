@@ -1,4 +1,4 @@
-"""Home Assistant lifecycle and network discovery for Huawei Modbus Bridge."""
+"""Home Assistant lifecycle and network discovery for Huawei Dynamic IP Translator."""
 
 from ipaddress import IPv4Interface
 

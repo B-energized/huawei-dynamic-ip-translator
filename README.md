@@ -1,4 +1,4 @@
-# Huawei Modbus Bridge
+# Huawei Dynamic IP Translator
 
 Deze aparte Home Assistant-integratie vindt een Huawei-omvormer, Smart Dongle of EMMA terug op basis van zijn MAC-adres. Huawei Solar gebruikt een vast lokaal adres en kan via HACS zijn gewone updates blijven krijgen.
 
@@ -8,15 +8,15 @@ Vereist Home Assistant 2026.8 of nieuwer.
 
 <!-- ha-marketplace:exclude-start -->
 
-1. Open [Huawei Modbus Bridge in Home Assistant](https://my.home-assistant.io/redirect/hacs_repository/?owner=B-energized&repository=huawei-modbus-bridge&category=integration). Kies indien nodig de Home Assistant-installatie van de klant.
-2. Werkt de link niet? Ga vanaf Home Assistant 2026.11 naar **Instellingen → Marketplace → Toevoegen via link**. Gebruik op oudere ondersteunde versies **HACS → ⋮ → Aangepaste repositories**. Voeg `https://github.com/B-energized/huawei-modbus-bridge` toe als **Integratie**.
-3. Open **Huawei Modbus Bridge**, installeer de integratie en herstart Home Assistant.
+1. Open [Huawei Dynamic IP Translator in Home Assistant](https://my.home-assistant.io/redirect/hacs_repository/?owner=B-energized&repository=huawei-dynamic-ip-translator&category=integration). Kies indien nodig de Home Assistant-installatie van de klant.
+2. Werkt de link niet? Ga vanaf Home Assistant 2026.11 naar **Instellingen → Marketplace → Toevoegen via link**. Gebruik op oudere ondersteunde versies **HACS → ⋮ → Aangepaste repositories**. Voeg `https://github.com/B-energized/huawei-dynamic-ip-translator` toe als **Integratie**.
+3. Open **Huawei Dynamic IP Translator**, installeer de integratie en herstart Home Assistant.
 
 <!-- ha-marketplace:exclude-end -->
 
 ## Eenmalig instellen
 
-1. Ga naar **Instellingen → Apparaten en diensten → Integratie toevoegen → Huawei Modbus Bridge**.
+1. Ga naar **Instellingen → Apparaten en diensten → Integratie toevoegen → Huawei Dynamic IP Translator**.
 2. Vul het **MAC-adres van het netwerktoestel waarmee Huawei Solar verbindt** in. Neem de bestaande Huawei Modbus TCP-poort en de eerste Modbus-unit-ID over uit Huawei Solar. De voorbeeldwaarden zijn `502` en `1`. Laat de lokale poort op `15020` staan, of kies per extra bridge een vrije poort.
 3. Open bij je bestaande Huawei Solar-integratie **⋮ → Opnieuw configureren**. Vul `127.0.0.1` in als host en `15020` als poort, of gebruik de gekozen lokale poort. Behoud de overige Huawei Solar-instellingen. Laat Huawei online tijdens deze eerste verbinding, zodat de bridge het serienummer kan opslaan.
 
