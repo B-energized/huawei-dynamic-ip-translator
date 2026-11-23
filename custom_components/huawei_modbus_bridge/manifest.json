@@ -1,0 +1,12 @@
+{
+  "domain": "huawei_modbus_bridge",
+  "name": "Huawei Modbus Bridge",
+  "codeowners": ["@B-energized"],
+  "config_flow": true,
+  "dependencies": ["dhcp", "network"],
+  "documentation": "https://github.com/B-energized/huawei-modbus-bridge#readme",
+  "integration_type": "service",
+  "iot_class": "local_polling",
+  "issue_tracker": "https://github.com/B-energized/huawei-modbus-bridge/issues",
+  "version": "0.1.0"
+}

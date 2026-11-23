@@ -1,0 +1,27 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Huawei Modbus Bridge instellen",
+        "description": "Stel Huawei Solar hierna opnieuw in op 127.0.0.1 en de lokale poort hieronder. Behoud de bestaande Modbus-unit-ID's.",
+        "data": {
+          "mac": "MAC-adres van Huawei",
+          "device_port": "Modbus TCP-poort op Huawei",
+          "unit_id": "Primaire Modbus-unit-ID",
+          "local_port": "Lokale poort voor Huawei Solar"
+        },
+        "data_description": {
+          "mac": "Vul het MAC-adres in van het toestel waarmee Huawei Solar verbindt, zoals de Smart Dongle, EMMA of omvormer.",
+          "unit_id": "Gebruik de eerste unit-ID uit de bestaande Huawei Solar-instellingen. De bridge gebruikt die om het serienummer te lezen en te controleren."
+        }
+      }
+    },
+    "error": {
+      "invalid_mac": "Vul een geldig MAC-adres in, bijvoorbeeld 94:25:33:12:34:56.",
+      "port_in_use": "Een andere Huawei Modbus Bridge gebruikt deze lokale poort al."
+    },
+    "abort": {
+      "already_configured": "Dit MAC-adres is al ingesteld."
+    }
+  }
+}

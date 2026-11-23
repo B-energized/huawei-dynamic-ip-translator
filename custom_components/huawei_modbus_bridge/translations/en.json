@@ -1,0 +1,27 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Set up Huawei Modbus Bridge",
+        "description": "After setup, reconfigure Huawei Solar to use 127.0.0.1 and the local port below. Keep the existing Modbus unit IDs.",
+        "data": {
+          "mac": "Huawei network MAC address",
+          "device_port": "Huawei Modbus TCP port",
+          "unit_id": "Primary Modbus unit ID",
+          "local_port": "Local port for Huawei Solar"
+        },
+        "data_description": {
+          "mac": "Enter the MAC address of the network device Huawei Solar connects to, such as the Smart Dongle, EMMA, or inverter.",
+          "unit_id": "Use the first unit ID from the existing Huawei Solar installation. This is used to read and verify its serial number."
+        }
+      }
+    },
+    "error": {
+      "invalid_mac": "Enter a valid MAC address, such as 94:25:33:12:34:56.",
+      "port_in_use": "Another Huawei Modbus Bridge already uses this local port."
+    },
+    "abort": {
+      "already_configured": "This MAC address is already configured."
+    }
+  }
+}
