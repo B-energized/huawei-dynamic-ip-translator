@@ -12,7 +12,7 @@ from homeassistant.exceptions import ConfigEntryNotReady
 from .discovery import scan_local_addresses
 from .proxy import ModbusBridge
 
-DOMAIN = "huawei_modbus_bridge"
+DOMAIN = "huawei_dynamic_ip_translator"
 CONF_MAC = "mac"
 CONF_DEVICE_PORT = "device_port"
 CONF_LOCAL_PORT = "local_port"

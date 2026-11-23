@@ -1,5 +1,5 @@
 {
-  "domain": "huawei_modbus_bridge",
+  "domain": "huawei_dynamic_ip_translator",
   "name": "Huawei Dynamic IP Translator",
   "codeowners": ["@B-energized"],
   "config_flow": true,
@@ -8,5 +8,5 @@
   "integration_type": "service",
   "iot_class": "local_polling",
   "issue_tracker": "https://github.com/B-energized/huawei-dynamic-ip-translator/issues",
-  "version": "0.1.1"
+  "version": "0.1.2"
 }

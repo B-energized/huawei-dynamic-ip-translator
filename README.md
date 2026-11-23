@@ -12,6 +12,10 @@ Vereist Home Assistant 2026.8 of nieuwer.
 2. Werkt de link niet? Ga vanaf Home Assistant 2026.11 naar **Instellingen → Marketplace → Toevoegen via link**. Gebruik op oudere ondersteunde versies **HACS → ⋮ → Aangepaste repositories**. Voeg `https://github.com/B-energized/huawei-dynamic-ip-translator` toe als **Integratie**.
 3. Open **Huawei Dynamic IP Translator**, installeer de integratie en herstart Home Assistant.
 
+Bij een handmatige installatie hoort de map `custom_components/huawei_dynamic_ip_translator` in je Home Assistant-configuratiemap.
+
+Heb je versie 0.1.0 of 0.1.1 al geïnstalleerd? Noteer eerst je instellingen. Verwijder de oude bridge, installeer 0.1.2 of nieuwer en voeg de integratie opnieuw toe met dezelfde lokale poort. Je bestaande Huawei Solar-integratie kan die poort blijven gebruiken.
+
 <!-- ha-marketplace:exclude-end -->
 
 ## Eenmalig instellen

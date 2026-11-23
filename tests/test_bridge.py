@@ -11,7 +11,7 @@ from unittest.mock import AsyncMock, patch
 
 
 def load_component_module(name):
-    folder = Path(__file__).resolve().parents[1] / "custom_components" / "huawei_modbus_bridge"
+    folder = Path(__file__).resolve().parents[1] / "custom_components" / "huawei_dynamic_ip_translator"
     spec = importlib.util.spec_from_file_location(name, folder / f"{name}.py")
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
